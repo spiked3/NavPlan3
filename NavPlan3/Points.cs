@@ -9,6 +9,8 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
+using Spiked3;
+
 namespace NavPlan3
 {
     public class NavPoint : INotifyPropertyChanged
@@ -25,11 +27,14 @@ namespace NavPlan3
 
         #endregion
 
-        public Point XY { get { return _XY; } set { _XY = value; OnPropertyChanged(); } }
-        Point _XY;
+        public Utm Utm { get { return _Utm; } set { _Utm = value; OnPropertyChanged(); } }
+        Utm _Utm;
+
+        public Wgs84 Wgs { get { return _Wgs; } set { _Wgs = value; OnPropertyChanged(); } }
+        Wgs84 _Wgs; 
 
         public bool isAction { get { return _isAction; } set { _isAction = value; OnPropertyChanged(); } }
-        bool _isAction = false; 
+        bool _isAction = false;
     }
 
     public class NavPointCollection : SortableObservableCollection<NavPoint>

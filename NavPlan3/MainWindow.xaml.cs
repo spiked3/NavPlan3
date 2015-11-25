@@ -15,6 +15,8 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using uPLibrary.Networking.M2Mqtt;
 
+using Spiked3;
+
 namespace NavPlan3
 {
     // for now Ive given up on a comprehensive planning app, this is a quick and dirty for local points only
@@ -54,21 +56,40 @@ namespace NavPlan3
             NavPoints_Changed(this, null);
         }
 
-        private void NavPoints_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        void Recalc()
         {
+            // point 0 is Origin
+            Utm origin = (Utm)NavPoints[0].Wgs;
+            
             double initialHeading = 0;
-            StringBuilder b = new StringBuilder($"{{\"ResetHdg\":{initialHeading},\"WayPoints\":[");
+            StringBuilder b = new StringBuilder();
+            b.Append($"{{\"ResetHdg\":{initialHeading},\n\"WayPoints\":[\n");
+
             bool firstTime = true;
+            
             foreach (NavPoint w in NavPoints)
             {
+                if (w == NavPoints[0])
+                    continue;
+
                 if (!firstTime)
-                    b.Append(",");
+                    b.Append(",\n");
                 else
                     firstTime = false;
 
-                b.AppendLine($"[{w.XY.X}, {w.XY.Y}, {(w.isAction ? 1 : 0)}]");    // Turn/Move version
+                Utm thisUtm = (Utm)w.Wgs;
+                double x = thisUtm.Easting - origin.Easting;
+                double y = thisUtm.Northing - origin.Northing;
+
+                //b.Append($"[{w.XY.X}, {w.XY.Y}, {(w.isAction ? 1 : 0)}]");    // Turn/Move version
+                b.Append($"[{x:F3}, {y:F3}, {(w.isAction ? 1 : 0)}]");    // Turn/Move version
             }
-            NavPointText = b.AppendLine($"]}}").ToString();
+            NavPointText = b.Append($"\n]}}").ToString();
+        }
+
+        private void NavPoints_Changed(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            Recalc();
         }
 
         private void Add_Click(object sender, RoutedEventArgs e)
@@ -78,7 +99,7 @@ namespace NavPlan3
 
         private void Refresh_Click(object sender, RoutedEventArgs e)
         {
-            NavPoints_Changed(sender, null);
+            Recalc();
             Clipboard.SetText(NavPointText);
         }
 
@@ -136,11 +157,6 @@ namespace NavPlan3
 
             Mq.Disconnect();
             StatusText = "NavPoints published";
-        }
-
-        private void PopUp_Click(object sender, RoutedEventArgs e)
-        {
-            new Window1().ShowDialog();
         }
     }
 }

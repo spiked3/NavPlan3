@@ -21,7 +21,6 @@
             <Button Content="Move Down" Click="MoveDown_Click" />
             <Button Content="Refresh" Click="Refresh_Click" />
             <Button Content="Publish" Click="Publish_Click" />
-            <Button Content="PopUp" Click="PopUp_Click" />
         </Menu>
 
         <StatusBar DockPanel.Dock="Bottom" Height="Auto">
@@ -33,13 +32,14 @@
                 <DataTemplate>
                     <Grid x:Name="waypoint1" Background="LightGray" Width="192" >
                         <Grid.ColumnDefinitions >
-                            <ColumnDefinition />
-                            <ColumnDefinition />
+                            <ColumnDefinition Width="3*"/>
+                            <ColumnDefinition Width="5*" />
                         </Grid.ColumnDefinitions>
                         <CheckBox Grid.Column="0"  IsChecked="{Binding isAction}" >
                             <TextBlock Text="Action" />
                         </CheckBox>
-                        <TextBox Grid.Column="1" Text="{Binding XY,StringFormat=F1}" Margin="2,1" />
+                        <TextBox Grid.Column="1" Text="{Binding Wgs, Delay=500, Converter={StaticResource Wgs84Converter}, UpdateSourceTrigger=PropertyChanged}" 
+                                 HorizontalContentAlignment="Right" Margin="2,1" />
                     </Grid>
                 </DataTemplate>
             </ListBox.ItemTemplate>

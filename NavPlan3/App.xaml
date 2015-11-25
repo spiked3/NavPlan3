@@ -2,8 +2,10 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:NavPlan3"
+             xmlns:S3="clr-namespace:Spiked3"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+        <S3:UtmConverter x:Key="UtmConverter" />
+        <S3:Wgs84Converter x:Key="Wgs84Converter" />
     </Application.Resources>
 </Application>
