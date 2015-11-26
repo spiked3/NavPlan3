@@ -27,58 +27,32 @@ namespace NavPlan3
 
         #endregion
 
-        public Utm Utm { get { return _Utm; } set { _Utm = value; OnPropertyChanged(); } }
-        Utm _Utm;
-
         public Wgs84 Wgs { get { return _Wgs; } set { _Wgs = value; OnPropertyChanged(); } }
-        Wgs84 _Wgs; 
+        Wgs84 _Wgs;
 
         public bool isAction { get { return _isAction; } set { _isAction = value; OnPropertyChanged(); } }
         bool _isAction = false;
     }
 
-    public class NavPointCollection : SortableObservableCollection<NavPoint>
-    {       
-
-    }
-
-    public class SortableObservableCollection<T> : ObservableCollection<T>
+    public class NavPointCollection : ObservableCollection<NavPoint>
     {
-        public SortableObservableCollection(IEnumerable<T> collection) :
-            base(collection)
-        { }
-
-        public SortableObservableCollection() : base() { }
-
-        public void Sort<TKey>(Func<T, TKey> keySelector)
+        protected override void InsertItem(int index, NavPoint item)
         {
-            Sort(Items.OrderBy(keySelector));
+            item.PropertyChanged += NavPointChanged;
+            base.InsertItem(index, item);
         }
 
-        public void Sort<TKey>(Func<T, TKey> keySelector, IComparer<TKey> comparer)
+        private void NavPointChanged(object sender, PropertyChangedEventArgs e)
         {
-            Sort(Items.OrderBy(keySelector, comparer));
+            OnPropertyChanged(new PropertyChangedEventArgs(""));
         }
 
-        public void SortDescending<TKey>(Func<T, TKey> keySelector)
+        protected override void RemoveItem(int index)
         {
-            Sort(Items.OrderByDescending(keySelector));
+            NavPoint item = Items[index];
+            item.PropertyChanged -= NavPointChanged;
+            base.RemoveItem(index);
         }
-
-        public void SortDescending<TKey>(Func<T, TKey> keySelector,
-            IComparer<TKey> comparer)
-        {
-            Sort(Items.OrderByDescending(keySelector, comparer));
-        }
-
-        public void Sort(IEnumerable<T> sortedItems)
-        {
-            List<T> sortedItemsList = sortedItems.ToList();
-            for (int i = 0; i < sortedItemsList.Count; i++)
-            {
-                Items[i] = sortedItemsList[i];
-            }
-        }
+        
     }
-
 }

@@ -26,12 +26,12 @@ namespace NavPlan3.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string NavPoints {
+        public string LastFileName {
             get {
-                return ((string)(this["NavPoints"]));
+                return ((string)(this["LastFileName"]));
             }
             set {
-                this["NavPoints"] = value;
+                this["LastFileName"] = value;
             }
         }
     }
