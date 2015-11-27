@@ -16,12 +16,17 @@
     </Window.Resources>
     <DockPanel LastChildFill="True">
         <Menu DockPanel.Dock="Top" >
+            <Button Content="New" Click="New" />
             <Button Content="Load ..." Click="Load" />
             <Button Content="SaveAs ..." Click="SaveAs" />
             <Button Content="Add" Click="Add_Click" />
             <Button Content="Move Up" Click="MoveUp_Click" />
             <Button Content="Move Down" Click="MoveDown_Click" />
             <Button Content="Publish" Click="Publish_Click" />
+            <StackPanel Orientation="Horizontal" >
+                <TextBlock Text="Inital Heading "  Margin="4,0"/>
+                <TextBox Text="{Binding NavPoints.InitialHeading,StringFormat=F2,FallbackValue=0.0}" Width="48" HorizontalContentAlignment="Right"/>
+            </StackPanel>
         </Menu>
 
         <StatusBar DockPanel.Dock="Bottom" Height="Auto">
@@ -40,7 +45,9 @@
                         <CheckBox Grid.Column="0"  IsChecked="{Binding isAction}" VerticalAlignment="Center">
                             <TextBlock Text="Action" />
                         </CheckBox>
-                        <TextBox Grid.Column="1" Text="{Binding Wgs, Delay=500, Converter={StaticResource Wgs84Converter}, UpdateSourceTrigger=PropertyChanged}" 
+                        <!--<TextBox Grid.Column="1" Text="{Binding Wgs, Delay=500, Converter={StaticResource Wgs84Converter}, UpdateSourceTrigger=PropertyChanged}" 
+                                 HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>-->
+                        <TextBox Grid.Column="1" Text="{Binding XY, Delay=500, UpdateSourceTrigger=PropertyChanged}" 
                                  HorizontalContentAlignment="Right" VerticalContentAlignment="Center"/>
                         <!-- GIT? kills the following character but it is the 'X' delete symbol in the symbol fonts (if it gets lost again ) -->
                         <Button Grid.Column="2" Content="´" FontFamily="Symbol" Width="18" Click="WpDelete" Background="Red" Foreground="White" />

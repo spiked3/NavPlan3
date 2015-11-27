@@ -22,9 +22,12 @@ using System.IO;
 namespace NavPlan3
 {
     // for now Ive given up on a comprehensive planning app, this is a quick and dirty
-    // todo some auto refreshing that should be is not occurring (my nug, not WPF)
     public partial class MainWindow : Window
     {
+
+        string Broker = "192.168.42.1";
+        //string Broker = "127.0.0.1";
+
         [JsonIgnore]
         static readonly JsonSerializerSettings settings = new JsonSerializerSettings
         {
@@ -46,7 +49,7 @@ namespace NavPlan3
             set { SetValue(NavPointsProperty, value); }
         }
         public static readonly DependencyProperty NavPointsProperty =
-            DependencyProperty.Register("NavPoints", typeof(NavPointCollection), typeof(MainWindow), new PropertyMetadata(OnNavPointChanged));
+            DependencyProperty.Register("NavPoints", typeof(NavPointCollection), typeof(MainWindow));
 
         public string NavPointText
         {
@@ -73,11 +76,6 @@ namespace NavPlan3
         public static readonly DependencyProperty LastFileNameProperty =
             DependencyProperty.Register("LastFileName", typeof(string), typeof(MainWindow));
 
-        static void OnNavPointChanged(DependencyObject source, DependencyPropertyChangedEventArgs ea)
-        {
-            
-        }
-
         public MainWindow()
         {
             InitializeComponent();
@@ -95,15 +93,14 @@ namespace NavPlan3
                 foreach (NavPoint n in NavPoints)
                     n.PropertyChanged += NavPointChanged;
                 LastFileName = f;
-                StatusText = $"Loaded collection {f}";
+                StatusText = $"Loaded collection {LastFileName}";
                 isDirty = false;
             }
             catch (Exception)
             {
                 System.Diagnostics.Debugger.Break();
                 StatusText = "Creating new collection";
-                NavPoints = new NavPointCollection();
-                NavPoints.Add(new NavPoint { });    // always an origin point
+                New(this, null);
                 LastFileName = null;
             }
         }
@@ -125,18 +122,29 @@ namespace NavPlan3
             {
                 LastFileName = d.FileName;
                 File.WriteAllText(LastFileName, JsonConvert.SerializeObject(NavPoints, settings));
+                StatusText = $"Saved collection {LastFileName}";
                 isDirty = false;
             }
         }
 
+        void New(object sender, RoutedEventArgs e)
+        {
+            NavPoints = new NavPointCollection { InitialHeading = 0 };
+            NavPoints.CollectionChanged += NavPointsChanged;
+            // todo this should trigger text update, but does not
+            NavPoints.Add(new NavPoint { });    // always an origin point
+            isDirty = true;
+        }
+
         private void NavPointsChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
+            // point 0 is Origin
+
             if (NavPoints.Count > 1)
             {
-                // point 0 is Origin
+#if WORLD
                 Utm origin = (Utm)NavPoints[0].Wgs;
 
-                double initialHeading = 0;
                 StringBuilder b = new StringBuilder();
                 b.Append($"{{\"ResetHdg\":{initialHeading},\n\"WayPoints\":[\n");
 
@@ -162,6 +170,29 @@ namespace NavPlan3
                     }
                 }
                 NavPointText = b.Append($"\n]}}").ToString();
+#else
+                StringBuilder b = new StringBuilder();
+                b.Append($"{{\"ResetHdg\":{NavPoints.InitialHeading},\n\"WayPoints\":[\n");
+
+                bool firstTime = true;
+
+                foreach (NavPoint w in NavPoints)
+                {
+                    if (w == NavPoints[0])
+                        continue;
+
+                    if (!firstTime)
+                        b.Append(",\n");
+                    else
+                        firstTime = false;
+
+                    double x = w.XY.X - NavPoints[0].XY.X;
+                    double y = w.XY.Y - NavPoints[0].XY.Y;
+
+                    b.Append($"[{x:F3}, {y:F3}, {(w.isAction ? 1 : 0)}]");    // Turn/Move version
+                }
+                NavPointText = b.Append($"\n]}}").ToString();
+#endif
             }
         }
 
@@ -188,19 +219,17 @@ namespace NavPlan3
         private void Publish_Click(object sender, RoutedEventArgs e)
         {
             MqttClient Mq;
-            //string broker = "192.168.42.1";
-            string broker = "127.0.0.1";
 
             NavPointsChanged(this, null);
             Clipboard.SetText(NavPointText);
             try
             {
-                Mq = new MqttClient(broker);
+                Mq = new MqttClient(Broker);
                 Mq.Connect("pNavPlan3");
                 Mq.Publish("Navplan/WayPoints", Encoding.ASCII.GetBytes(NavPointText));
                 System.Threading.Thread.Sleep(200);
                 Mq.Disconnect();
-                StatusText = $"Connected to MQTT @ { broker},  NavPoints published";
+                StatusText = $"Connected to MQTT @ { Broker},  NavPoints published";
             }
             catch (Exception ex)
             {
@@ -215,9 +244,7 @@ namespace NavPlan3
             {
                 var i = NavPoints.IndexOf((NavPoint)listBox1.SelectedItem);
                 if (i > 0)
-                {
                     NavPoints.Move(i, i - 1);
-                }
                 else
                     StatusText = "No item selected";
             }
@@ -229,10 +256,7 @@ namespace NavPlan3
             {
                 var i = NavPoints.IndexOf((NavPoint)listBox1.SelectedItem);
                 if (i < NavPoints.Count - 1)
-                {
                     NavPoints.Move(i, i + 1);
-                    isDirty = true;
-                }
             }
             else
                 StatusText = "No item selected";

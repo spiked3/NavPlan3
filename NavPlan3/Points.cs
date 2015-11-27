@@ -27,8 +27,14 @@ namespace NavPlan3
 
         #endregion
 
+#if WORLD
+
         public Wgs84 Wgs { get { return _Wgs; } set { _Wgs = value; OnPropertyChanged(); } }
         Wgs84 _Wgs;
+#else
+        public Point XY { get { return _XY; } set { _XY = value; OnPropertyChanged(); } } 
+        Point _XY = new Point(0,0); 
+#endif
 
         public bool isAction { get { return _isAction; } set { _isAction = value; OnPropertyChanged(); } }
         bool _isAction = false;
@@ -36,6 +42,10 @@ namespace NavPlan3
 
     public class NavPointCollection : ObservableCollection<NavPoint>
     {
+        // todo this is not getting json serialized?
+        public float InitialHeading { get { return _InitialHeading; } set { _InitialHeading = value; OnPropertyChanged(new PropertyChangedEventArgs("InitialHeading")); } }
+        float _InitialHeading = 0;
+
         protected override void InsertItem(int index, NavPoint item)
         {
             item.PropertyChanged += NavPointChanged;
