@@ -140,13 +140,16 @@ namespace NavPlan3
         {
             // point 0 is Origin
 
-            if (NavPoints.Count > 1)
+            if (NavPoints.Count > 2)
             {
 #if WORLD
                 Utm origin = (Utm)NavPoints[0].Wgs;
+                Utm waypoint1 = (Utm)NavPoints[1].Wgs;
+                NavPoints.InitialHeading = (float)Math.Atan2(waypoint1.Easting - origin.Easting, waypoint1.Northing - origin.Northing);
+                NavPoints.InitialHeading *= (float)(180 / Math.PI);
 
                 StringBuilder b = new StringBuilder();
-                b.Append($"{{\"ResetHdg\":{initialHeading},\n\"WayPoints\":[\n");
+                b.Append($"{{\"ResetHdg\":{NavPoints.InitialHeading},\n\"WayPoints\":[\n");
 
                 bool firstTime = true;
 
@@ -171,6 +174,9 @@ namespace NavPlan3
                 }
                 NavPointText = b.Append($"\n]}}").ToString();
 #else
+                NavPoints.InitialHeading = (float)Math.Atan2(NavPoints[1].XY.X, NavPoints[1].XY.Y);
+                NavPoints.InitialHeading *= (float)(180 / Math.PI);
+
                 StringBuilder b = new StringBuilder();
                 b.Append($"{{\"ResetHdg\":{NavPoints.InitialHeading},\n\"WayPoints\":[\n");
 
@@ -220,7 +226,7 @@ namespace NavPlan3
         {
             MqttClient Mq;
 
-            NavPointsChanged(this, null);
+            NavPointsChanged(this, null);   // todo overwrites user supplied initial heading
             Clipboard.SetText(NavPointText);
             try
             {
@@ -278,6 +284,11 @@ namespace NavPlan3
 
             Properties.Settings.Default.LastFileName = LastFileName;
             Properties.Settings.Default.Save();
+        }
+
+        private void Exit_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
         }
     }
 }

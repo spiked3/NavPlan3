@@ -62,6 +62,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Controls.Ribbon" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -135,6 +136,24 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Arrowhead-Down.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Arrowhead-Up.png" />
+    <Resource Include="images\Document-Add-01.png" />
+    <Resource Include="images\Document-Download-01.png" />
+    <Resource Include="images\Save As.png" />
+    <Resource Include="images\Upload - 02.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Open.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="images\Add-Earth.png" />
+    <Resource Include="images\Add-New.png" />
+    <Resource Include="images\Node.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

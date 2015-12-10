@@ -7,27 +7,38 @@
         mc:Ignorable="d"
         ResizeMode="CanResizeWithGrip"
         DataContext="{Binding RelativeSource={RelativeSource Self}}"
-        Title="MainWindow" Height="350" Width="525" Closing="Window_Closing">
+        Title="NavPlan3" Height="350" Width="525" Closing="Window_Closing">
     <Window.Resources>
-        <Style TargetType="Button" >
+        <!--<Style TargetType="Button" >
             <Setter Property="Margin" Value="4" />
             <Setter Property="Width" Value="72" />
-        </Style>
+        </Style>-->
     </Window.Resources>
     <DockPanel LastChildFill="True">
-        <Menu DockPanel.Dock="Top" >
-            <Button Content="New" Click="New" />
-            <Button Content="Load ..." Click="Load" />
-            <Button Content="SaveAs ..." Click="SaveAs" />
-            <Button Content="Add" Click="Add_Click" />
-            <Button Content="Move Up" Click="MoveUp_Click" />
-            <Button Content="Move Down" Click="MoveDown_Click" />
-            <Button Content="Publish" Click="Publish_Click" />
-            <StackPanel Orientation="Horizontal" >
-                <TextBlock Text="Inital Heading "  Margin="4,0"/>
-                <TextBox Text="{Binding NavPoints.InitialHeading,StringFormat=F2,FallbackValue=0.0}" Width="48" HorizontalContentAlignment="Right"/>
-            </StackPanel>
-        </Menu>
+        <Ribbon DockPanel.Dock="Top" >
+            <Ribbon.ApplicationMenu>
+                <RibbonApplicationMenu>
+                    <RibbonSeparator />
+                    <RibbonApplicationMenuItem Header="E_xit" Click="Exit_Click" />
+                </RibbonApplicationMenu>
+            </Ribbon.ApplicationMenu>
+
+            <RibbonTab Header="Main" >
+                <RibbonGroup>
+                    <RibbonButton Label="New" Click="New" LargeImageSource="images/Document-Add-01.png" />
+                    <RibbonButton Label="Load ..." Click="Load" LargeImageSource="images/Open.png" />
+                    <RibbonButton Label="SaveAs ..." Click="SaveAs" LargeImageSource="images/Save As.png" />
+                    <RibbonButton Label="Add" Click="Add_Click" LargeImageSource="images/Add-New.png" />
+                    <RibbonButton Label="Move Up" Click="MoveUp_Click" LargeImageSource="images/Arrowhead-Up.png" />
+                    <RibbonButton Label="Move Down" Click="MoveDown_Click" LargeImageSource="images/Arrowhead-Down.png" />
+                    <RibbonButton Label="Publish" Click="Publish_Click" LargeImageSource="images/Upload - 02.png" />
+                    <StackPanel Orientation="Horizontal" >
+                        <TextBlock Text="Inital Heading "  Margin="4,0"/>
+                        <TextBox Text="{Binding NavPoints.InitialHeading,StringFormat=F2,FallbackValue=0.0}" Width="48" HorizontalContentAlignment="Right"/>
+                    </StackPanel>
+                </RibbonGroup>
+            </RibbonTab>
+        </Ribbon>
 
         <StatusBar DockPanel.Dock="Bottom" Height="Auto">
             <TextBlock Text="{Binding StatusText,FallbackValue=StatusText}" />
