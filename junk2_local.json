@@ -1,0 +1,30 @@
+{
+  "$type": "NavPlan3.NavPointCollection, NavPlan3",
+  "$values": [
+    {
+      "$type": "NavPlan3.NavPoint, NavPlan3",
+      "XY": "0,0",
+      "isAction": false
+    },
+    {
+      "$type": "NavPlan3.NavPoint, NavPlan3",
+      "XY": "0,1",
+      "isAction": false
+    },
+    {
+      "$type": "NavPlan3.NavPoint, NavPlan3",
+      "XY": "-1,1",
+      "isAction": true
+    },
+    {
+      "$type": "NavPlan3.NavPoint, NavPlan3",
+      "XY": "0,0.5",
+      "isAction": false
+    },
+    {
+      "$type": "NavPlan3.NavPoint, NavPlan3",
+      "XY": "0,0",
+      "isAction": false
+    }
+  ]
+}
